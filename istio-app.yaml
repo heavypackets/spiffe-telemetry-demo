@@ -1,0 +1,35 @@
+##################################################################################################
+# DonutSalon service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: donutsalon
+  labels:
+    app: donutsalon
+spec:
+  ports:
+  - port: 80
+    name: http
+  selector:
+    app: donutsalon
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: donutsalon
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: donutsalon
+        version: v1
+    spec:
+      containers:
+      - name: donutsalon
+        image: lightstep/donutsalon:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+---

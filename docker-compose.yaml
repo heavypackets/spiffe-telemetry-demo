@@ -1,0 +1,54 @@
+version: '2'
+services:
+
+  front-envoy:
+    build:
+      context: ./
+      dockerfile: Dockerfile-front
+    volumes:
+      - ./envoy-front.json:/etc/envoy-front.json
+    networks:
+      - envoymesh
+    expose:
+      - "80"
+      - "8001"
+    ports:
+      - "8000:80"
+      - "8001:8001"
+
+  service1:
+    build:
+      context: ./
+      dockerfile: Dockerfile-back
+    networks:
+      envoymesh:
+        aliases:
+          - service1
+    environment:
+      - SERVICE_NAME=1
+    expose:
+      - "80"
+      - "8080"
+    ports:
+      - "9001:80"
+      - "8081:8080"
+
+  service2:
+    build:
+      context: ./
+      dockerfile: Dockerfile-back
+    networks:
+      envoymesh:
+        aliases:
+          - service2
+    environment:
+      - SERVICE_NAME=2
+    expose:
+      - "80"
+      - "8080"
+    ports:
+      - "9000:80"
+      - "8080:8080"
+
+networks:
+  envoymesh: {}

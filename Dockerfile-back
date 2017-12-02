@@ -1,0 +1,11 @@
+FROM envoyproxy/envoy:latest
+
+COPY envoy-back.json /etc/envoy.json
+COPY ls_access_token /etc/ls_access_token
+COPY donutbin /usr/local/bin/donutbin
+COPY go/src/app /etc/app
+COPY start_back.sh /usr/local/bin/start_back.sh
+EXPOSE 80
+EXPOSE 8001
+EXPOSE 8080
+ENTRYPOINT /usr/local/bin/start_back.sh
