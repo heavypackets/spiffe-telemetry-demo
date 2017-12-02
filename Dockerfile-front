@@ -1,4 +1,4 @@
-FROM envoyproxy/envoy:latest
+FROM lightstep/envoydemo:latest
 
 RUN apt-get update && \
     apt-get install -qqy \
@@ -7,4 +7,4 @@ COPY envoy-front.json /etc/envoy.json
 COPY ls_access_token /etc/ls_access_token
 EXPOSE 80
 EXPOSE 8001
-CMD /usr/local/bin/envoy -c /etc/envoy.json --service-cluster front-proxy --service-node `hostname`
+CMD envoy -c /etc/envoy.json --service-cluster front-proxy --service-node `hostname`

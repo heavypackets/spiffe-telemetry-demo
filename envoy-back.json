@@ -14,7 +14,7 @@
             "route_config": {
               "virtual_hosts": [
                 {
-                  "name": "service",
+                  "name": "donutsalon",
                   "domains": ["*"],
                   "routes": [
                     {

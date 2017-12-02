@@ -14,14 +14,14 @@ services:
       - "8000:80"
       - "8001:8001"
 
-  service1:
+  donutsalon-1:
     build:
       context: ./
       dockerfile: Dockerfile-back
     networks:
       envoymesh:
         aliases:
-          - service1
+          - donutsalon-1
     environment:
       - SERVICE_NAME=1
     expose:
@@ -31,14 +31,14 @@ services:
       - "9001:80"
       - "8081:8080"
 
-  service2:
+  donutsalon-2:
     build:
       context: ./
       dockerfile: Dockerfile-back
     networks:
       envoymesh:
         aliases:
-          - service2
+          - donutsalon-2
     environment:
       - SERVICE_NAME=2
     expose:
