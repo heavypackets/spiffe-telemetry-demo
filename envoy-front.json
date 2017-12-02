@@ -9,7 +9,8 @@
             "codec_type": "auto",
             "stat_prefix": "ingress_http",
             "tracing": {
-              "operation_name": "ingress"
+              "operation_name": "ingress",
+              "request_headers_for_tags": ["ot-tracer-traceid","ot-tracer-spanid"]
             },
             "route_config": {
               "virtual_hosts": [

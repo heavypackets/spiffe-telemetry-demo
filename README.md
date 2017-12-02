@@ -1,5 +1,22 @@
 # DonutSalon
-## Local Setup
+
+## Setup
+
+```
+brew install direnv
+direnv allow
+```
+
+## Deploy DonutSalon with Docker-Compose (LightStep edition)
+
+```
+# run build once, and after any change to app
+./build.sh
+docker-compose up
+```
+
+
+## Ignore all this
 
 First, install the latest `virtualbox`, `minikube` and `kubectl`.
 
@@ -20,10 +37,3 @@ kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=ja
 kubectl create -f instio-app.yaml
 ```
 
-## Deploy DonutSalon with Docker-Compose (LightStep edition)
-
-```
-# run build once, and after any change to app
-./build.sh
-docker-compose up
-```
