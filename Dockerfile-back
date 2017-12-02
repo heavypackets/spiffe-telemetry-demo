@@ -1,5 +1,8 @@
 FROM envoyproxy/envoy:latest
 
+RUN apt-get update && \
+    apt-get install -qqy \
+	ca-certificates
 COPY envoy-back.json /etc/envoy.json
 COPY ls_access_token /etc/ls_access_token
 COPY donutbin /usr/local/bin/donutbin

@@ -21,9 +21,9 @@ const (
 
 var (
 	baseDir            = flag.String("basedir", "/etc/app/", "")
-	accessToken        = flag.String("token", "7c0eb03dc5f7b1804946a2c592c74f5c", "")
+	accessToken        = flag.String("token", "DEVELOPMENT_TOKEN_bhs", "")
 	port               = flag.Int("port", 8080, "")
-	collectorHost      = flag.String("collector_host", "collector-grpc-staging.lightstep.com", "")
+	collectorHost      = flag.String("collector_host", "collector-grpc.lightstep.com", "")
 	collectorPort      = flag.Int("collector_port", 443, "")
 	tracerType         = flag.String("tracer_type", "lightstep", "")
 	orderProcesses     = flag.Int("order", 1, "")
@@ -78,9 +78,9 @@ func main() {
 	ds := newDonutService(tracerGen)
 
 	// Make fake queries in the background.
-	backgroundProcess(*orderProcesses, ds, runFakeUser)
-	backgroundProcess(*restockerProcesses, ds, runFakeRestocker)
-	backgroundProcess(*cleanerProcesses, ds, runFakeCleaner)
+	//	backgroundProcess(*orderProcesses, ds, runFakeUser)
+	//	backgroundProcess(*restockerProcesses, ds, runFakeRestocker)
+	//	backgroundProcess(*cleanerProcesses, ds, runFakeCleaner)
 
 	http.HandleFunc("/", ds.pageHandler("order"))
 	http.HandleFunc("/clean", ds.pageHandler("clean"))

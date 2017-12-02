@@ -8,6 +8,9 @@
           "config": {
             "codec_type": "auto",
             "stat_prefix": "ingress_http",
+            "tracing": {
+              "operation_name": "ingress"
+            },
             "route_config": {
               "virtual_hosts": [
                 {
@@ -87,14 +90,20 @@
         ]
       },
       {
-        "name": "lightstep",
+        "name": "lightstep", 
+        "features": "http2", 
+        "ssl_context": {
+          "ca_cert_file": "/etc/ssl/certs/ca-certificates.crt", 
+          "verify_subject_alt_name": [
+            "collector-grpc.lightstep.com"
+          ]
+        }, 
         "connect_timeout_ms": 1000, 
         "type": "logical_dns", 
-        "lb_type": "round_robin",
-        "features": "http2",       
+        "lb_type": "round_robin", 
         "hosts": [
           {
-            "url": "tcp://collector-grpc-staging.lightstep.com:443"
+            "url": "tcp://collector-grpc.lightstep.com:443"
           }
         ]
       }
