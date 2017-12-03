@@ -85,10 +85,16 @@ func main() {
 	http.HandleFunc("/", ds.pageHandler("order"))
 	http.HandleFunc("/clean", ds.pageHandler("clean"))
 	http.HandleFunc("/restock", ds.pageHandler("restock"))
-	http.HandleFunc("/api/order", ds.webOrder)
-	http.HandleFunc("/status", ds.handleState)
+
 	http.HandleFunc("/api/clean", ds.webClean)
+	http.HandleFunc("/api/order", ds.webOrder)
 	http.HandleFunc("/api/restock", ds.webRestock)
+
+	http.HandleFunc("/service/fry", ds.serviceFry)
+	http.HandleFunc("/service/top", ds.serviceTop)
+
+	http.HandleFunc("/status", ds.handleState)
+
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(*baseDir+"public/"))))
 	fmt.Println("Starting on :", *port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
