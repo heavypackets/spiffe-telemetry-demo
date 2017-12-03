@@ -71,7 +71,6 @@
         "connect_timeout_ms": 250,
         "type": "strict_dns",
         "lb_type": "round_robin",
-        "features": "http2",
         "hosts": [
           {
             "url": "tcp://donutsalon-1:80"
@@ -83,7 +82,6 @@
         "connect_timeout_ms": 250,
         "type": "strict_dns",
         "lb_type": "round_robin",
-        "features": "http2",
         "hosts": [
           {
             "url": "tcp://donutsalon-2:80"

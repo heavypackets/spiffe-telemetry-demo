@@ -31,22 +31,5 @@ services:
       - "9001:80"
       - "8081:8080"
 
-  donutsalon-2:
-    build:
-      context: ./
-      dockerfile: Dockerfile-back
-    networks:
-      envoymesh:
-        aliases:
-          - donutsalon-2
-    environment:
-      - SERVICE_NAME=2
-    expose:
-      - "80"
-      - "8080"
-    ports:
-      - "9000:80"
-      - "8080:8080"
-
 networks:
   envoymesh: {}
