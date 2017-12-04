@@ -122,6 +122,7 @@ func (ds *DonutService) serviceFry(w http.ResponseWriter, r *http.Request) {
 	span := ds.tracer.StartSpan(
 		"fry",
 		ext.RPCServerOption(clientContext))
+	defer span.Finish()
 
 	goCtx := opentracing.ContextWithSpan(context.Background(), span)
 	ds.fryer.FryDonut(goCtx)
@@ -142,6 +143,7 @@ func (ds *DonutService) serviceTop(w http.ResponseWriter, r *http.Request) {
 	span := ds.tracer.StartSpan(
 		"top",
 		ext.RPCServerOption(clientContext))
+	defer span.Finish()
 
 	err := ds.addTopping(span, p.Flavor)
 	if err != nil {
