@@ -157,7 +157,7 @@ func (ds *DonutService) state() *State {
 }
 
 func (ds *DonutService) call(clientSpanContext opentracing.SpanContext, path string, postBody []byte) error {
-	url := fmt.Sprintf("http://127.0.0.1:%d%s", *port, path)
+	url := fmt.Sprintf("http://%s%s", *serviceHostport, path)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(postBody))
 	req.Header.Set("Content-Type", "application/json")

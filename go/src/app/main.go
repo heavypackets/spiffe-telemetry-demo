@@ -23,6 +23,7 @@ var (
 	baseDir            = flag.String("basedir", "/etc/app/", "")
 	accessToken        = flag.String("token", "DEVELOPMENT_TOKEN_bhs", "")
 	port               = flag.Int("port", 8080, "")
+	serviceHostport    = flag.String("service_hostport", "localhost:8080", "")
 	collectorHost      = flag.String("collector_host", "collector-grpc.lightstep.com", "")
 	collectorPort      = flag.Int("collector_port", 443, "")
 	tracerType         = flag.String("tracer_type", "lightstep", "")

@@ -6,7 +6,9 @@ services:
       context: ./
       dockerfile: Dockerfile-front
     networks:
-      - envoymesh
+      envoymesh:
+        aliases:
+          - front-envoy
     expose:
       - "80"
       - "8001"
