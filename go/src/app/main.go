@@ -55,7 +55,7 @@ func main() {
 					Host: *collectorHost,
 					Port: *collectorPort,
 				},
-				MaxBufferedSpans: 100000,
+				MaxBufferedSpans: 200000,
 				UseGRPC:          true,
 				Tags: opentracing.Tags{
 					lightstep.ComponentNameKey: component,
