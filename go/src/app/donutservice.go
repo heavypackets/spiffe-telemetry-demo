@@ -14,7 +14,6 @@ import (
 	"io"
 
 	opentracing "github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
 )
 
 const (
@@ -74,7 +73,7 @@ func (ds *DonutService) webOrder(w http.ResponseWriter, r *http.Request) {
 		panic("flavor not set")
 	}
 
-	span := ds.tracer.StartSpan(fmt.Sprintf("order_donut[%s]", p.Flavor), ext.RPCServerOption(clientContext))
+	span := ds.tracer.StartSpan(fmt.Sprintf("order_donut[%s]", p.Flavor), opentracing.ChildOf(clientContext))
 	defer span.Finish()
 
 	err := ds.makeDonut(span.Context(), p.Flavor)
@@ -110,7 +109,7 @@ func (ds *DonutService) webRestock(w http.ResponseWriter, r *http.Request) {
 
 	span := ds.tracer.StartSpan(
 		fmt.Sprintf("restock[%s]", p.Flavor),
-		ext.RPCServerOption(clientContext))
+		opentracing.ChildOf(clientContext))
 
 	ds.restock(span.Context(), p.Flavor)
 }
@@ -121,7 +120,7 @@ func (ds *DonutService) serviceFry(w http.ResponseWriter, r *http.Request) {
 
 	span := ds.tracer.StartSpan(
 		"fry",
-		ext.RPCServerOption(clientContext))
+		opentracing.ChildOf(clientContext))
 	defer span.Finish()
 
 	goCtx := opentracing.ContextWithSpan(context.Background(), span)
@@ -142,7 +141,7 @@ func (ds *DonutService) serviceTop(w http.ResponseWriter, r *http.Request) {
 
 	span := ds.tracer.StartSpan(
 		"top",
-		ext.RPCServerOption(clientContext))
+		opentracing.ChildOf(clientContext))
 	defer span.Finish()
 
 	err := ds.addTopping(span, p.Flavor)
@@ -183,7 +182,7 @@ func (ds *DonutService) call(clientSpanContext opentracing.SpanContext, path str
 }
 
 func (ds *DonutService) makeDonut(parentSpanContext opentracing.SpanContext, flavor string) error {
-	donutSpan := ds.tracer.StartSpan("make_donut", ext.RPCServerOption(parentSpanContext))
+	donutSpan := ds.tracer.StartSpan("make_donut", opentracing.ChildOf(parentSpanContext))
 	defer donutSpan.Finish()
 	ctx := opentracing.ContextWithSpan(context.Background(), donutSpan)
 
@@ -211,7 +210,7 @@ func (ds *DonutService) addTopping(span opentracing.Span, flavor string) error {
 }
 
 func (ds *DonutService) cleanFryer(parentSpanContext opentracing.SpanContext) {
-	donutSpan := ds.tracer.StartSpan("clean_fryer", ext.RPCServerOption(parentSpanContext))
+	donutSpan := ds.tracer.StartSpan("clean_fryer", opentracing.ChildOf(parentSpanContext))
 	defer donutSpan.Finish()
 	ctx := opentracing.ContextWithSpan(context.Background(), donutSpan)
 
@@ -233,7 +232,7 @@ func (ds *DonutService) inventory() map[string]int {
 }
 
 func (ds *DonutService) restock(parentSpanContext opentracing.SpanContext, flavor string) {
-	donutSpan := ds.tracer.StartSpan("restock_ingredients", ext.RPCServerOption(parentSpanContext))
+	donutSpan := ds.tracer.StartSpan("restock_ingredients", opentracing.ChildOf(parentSpanContext))
 	defer donutSpan.Finish()
 	ctx := opentracing.ContextWithSpan(context.Background(), donutSpan)
 
