@@ -7,13 +7,12 @@ import (
 	"math"
 	"net/http"
 	_ "net/http/pprof"
+	"os"
 	"time"
 
 	opentracing "github.com/opentracing/opentracing-go"
 	jaeger "github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
-	"github.com/uber/jaeger-client-go/log"
-	"github.com/uber/jaeger-lib/metrics"
 )
 
 const (
@@ -50,22 +49,22 @@ func main() {
 	lightstep.SetGlobalEventHandler(lightstep.NewEventLogOneError())
 	var tracerGen TracerGenerator
 	if *tracerType == "jaeger" {
-		cfg := config.Configuration{
-			Sampler: &jaegercfg.SamplerConfig{
-				Type:  jaeger.SamplerTypeConst,
-				Param: 1,
-			},
+		tracerGen = func(component string) opentracing.Tracer {
+			cfg := config.Configuration{
+				Sampler: &config.SamplerConfig{
+					Type:  jaeger.SamplerTypeConst,
+					Param: 1,
+				},
+				Reporter: &config.ReporterConfig{
+					LocalAgentHostPort: fmt.Sprintf("%s:6831", os.Getenv("JAEGER_AGENT_HOST")),
+				},
+			}
+			tracer, _, err := cfg.New(component)
+			if err != nil {
+				panic(err)
+			}
+			return tracer
 		}
-		closer, err := cfg.InitGlobalTracer(
-			component,
-			config.Logger(log.StdLogger),
-			config.Metrics(metrics.NullFactory),
-		)
-		if err != nil {
-			log.Printf("Could not initialize jaeger tracer: %s", err.Error())
-			return
-		}
-		defer closer.Close()
 	} else {
 		panic(*tracerType)
 	}
