@@ -38,7 +38,7 @@ func SleepGaussian(d time.Duration, queueLength float64) {
 	if queueLength > 4 {
 		cappedDuration = math.Min(float64(time.Millisecond*50), maxQueueDuration/(queueLength-4))
 	}
-	//  noise := (float64(cappedDuration) / 3) * rand.NormFloat64()
+	//	noise := (float64(cappedDuration) / 3) * rand.NormFloat64()
 	time.Sleep(time.Duration(cappedDuration))
 }
 
@@ -46,7 +46,7 @@ type TracerGenerator func(component string) opentracing.Tracer
 
 func main() {
 	flag.Parse()
-	lightstep.SetGlobalEventHandler(lightstep.NewEventLogOneError())
+
 	var tracerGen TracerGenerator
 	if *tracerType == "jaeger" {
 		tracerGen = func(component string) opentracing.Tracer {
@@ -71,9 +71,15 @@ func main() {
 	ds := newDonutService(tracerGen)
 
 	// Make fake queries in the background.
-	//  backgroundProcess(*orderProcesses, ds, runFakeUser)
-	//  backgroundProcess(*restockerProcesses, ds, runFakeRestocker)
-	//  backgroundProcess(*cleanerProcesses, ds, runFakeCleaner)
+	//	backgroundProcess(*orderProcesses, ds, runFakeUser)
+	//	backgroundProcess(*restockerProcesses, ds, runFakeRestocker)
+	//	backgroundProcess(*cleanerProcesses, ds, runFakeCleaner)
+
+	http.HandleFunc("/", ds.pageHandler("order"))
+	http.HandleFunc("/clean", ds.pageHandler("clean"))
+	http.HandleFunc("/restock", ds.pageHandler("restock"))
+
+	http.HandleFunc("/api/clean", ds.webClean)
 	http.HandleFunc("/api/order", ds.webOrder)
 	http.HandleFunc("/api/restock", ds.webRestock)
 
