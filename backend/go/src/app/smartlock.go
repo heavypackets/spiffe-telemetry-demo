@@ -41,8 +41,8 @@ func (sl *SmartLock) Lock(activeSpan opentracing.Span) {
 	lockDuration := time.Now().Sub(before)
 
 	if lockDuration.Seconds() > 0.01 {
-		acquireSpan := activeSpan.Tracer().StartSpan(
-			"mutex_acquire",
+		acquireSpan := startSpan(
+			"mutex_acquire", sl.activeSpan.Tracer(),
 			opentracing.ChildOf(activeSpan.Context()),
 			opentracing.StartTime(before))
 		acquireSpan.SetTag("num_waiters", waiters)
@@ -59,8 +59,8 @@ func (sl *SmartLock) Unlock() {
 
 	heldTime := released.Sub(sl.acquired)
 	if heldTime.Seconds() > 0.01 {
-		heldSpan := sl.activeSpan.Tracer().StartSpan(
-			"mutex_hold",
+		heldSpan := startSpan(
+			"mutex_hold", sl.activeSpan.Tracer(),
 			opentracing.ChildOf(sl.activeSpan.Context()),
 			opentracing.StartTime(sl.acquired))
 		heldSpan.Finish()

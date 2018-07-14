@@ -53,7 +53,7 @@ func (f *Fryer) ChangeOil(ctx context.Context) {
 }
 
 func (f *Fryer) OilLevel() int {
-	span := f.tracer.StartSpan("oil_level")
+	span := startSpan("oil_level", f.tracer)
 	defer span.Finish()
 
 	return f.oilLevel

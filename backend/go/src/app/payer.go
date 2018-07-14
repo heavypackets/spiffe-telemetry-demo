@@ -26,7 +26,7 @@ func (m *Payer) BuyDonut(ctx context.Context) {
 	if parent := opentracing.SpanFromContext(ctx); parent != nil {
 		parentSpanContext = parent.Context()
 	}
-	span := m.tracer.StartSpan("process_payment", opentracing.ChildOf(parentSpanContext))
+	span := startSpan("process_payment", m.tracer, opentracing.ChildOf(parentSpanContext))
 	defer span.Finish()
 
 	span.LogEvent(fmt.Sprint("Order: ", span.BaggageItem(donutOriginKey)))

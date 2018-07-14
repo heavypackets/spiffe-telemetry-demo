@@ -112,7 +112,7 @@ func backgroundProcess(max int, ds *DonutService, f func(flavor string, ds *Donu
 func runFakeUser(flavor string, ds *DonutService) {
 	for {
 		SleepGaussian(2500*time.Millisecond, 1)
-		span := ds.tracer.StartSpan(fmt.Sprintf("background_order[%s]", flavor))
+		span := startSpan(fmt.Sprintf("background_order[%s]", flavor), ds.tracer)
 		ds.makeDonut(span.Context(), flavor)
 		span.Finish()
 	}
@@ -121,7 +121,7 @@ func runFakeUser(flavor string, ds *DonutService) {
 func runFakeRestocker(flavor string, ds *DonutService) {
 	for {
 		SleepGaussian(20000*time.Millisecond, 1)
-		span := ds.tracer.StartSpan(fmt.Sprintf("background_restocker[%s]", flavor))
+		span := startSpan(fmt.Sprintf("background_restocker[%s]", flavor), ds.tracer)
 		ds.restock(span.Context(), flavor)
 		span.Finish()
 	}
@@ -130,16 +130,28 @@ func runFakeRestocker(flavor string, ds *DonutService) {
 func runFakeCleaner(flavor string, ds *DonutService) {
 	for {
 		SleepGaussian(time.Second, 1)
-		span := ds.tracer.StartSpan("background_cleaner")
+		span := startSpan("background_cleaner", ds.tracer)
 		ds.cleanFryer(span.Context())
 		span.Finish()
 	}
+}
+
+func setSpanSVID(span opentracing.Span) {
+	span.SetTag("spiffe_id", "spiffe://example.org/donutsalon-1")
+}
+
+func startSpan(name string, tracer opentracing.Tracer, opts ...opentracing.StartSpanOption) opentracing.Span {
+	span := tracer.StartSpan(name, opts...)
+	setSpanSVID(span)
+
+	return span
 }
 
 func startSpanFronContext(name string, tracer opentracing.Tracer, ctx context.Context) opentracing.Span {
 	var parentSpanContext opentracing.SpanContext
 	if parent := opentracing.SpanFromContext(ctx); parent != nil {
 		parentSpanContext = parent.Context()
+		setSpanSVID(parent)
 	}
-	return tracer.StartSpan(name, opentracing.ChildOf(parentSpanContext))
+	return startSpan(name, tracer, opentracing.ChildOf(parentSpanContext))
 }
