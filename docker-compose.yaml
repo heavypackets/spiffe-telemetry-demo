@@ -50,5 +50,18 @@ services:
       - "8082:8081"
     tty: true
 
+  jaeger:
+    image: jaegertracing/all-in-one
+    networks:
+      envoymesh:
+        aliases:
+          - jaeger
+    expose:
+      - "9411"
+      - "16686"
+    ports:
+      - "9411:9411"
+      - "16686:16686"
+
 networks:
   envoymesh: {}
