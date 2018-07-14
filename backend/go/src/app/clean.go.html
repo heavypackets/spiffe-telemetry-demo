@@ -1,0 +1,87 @@
+<html>
+  <meta charset="ISO-8859-1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+  {{template "header.go.html"}}
+
+  <body>
+    <div class="container-fluid">
+      <center>
+        <h1>🍩aaS</h1>
+        <h4><em>Oil-Cleaning Portal</em></h4>
+      </center>
+
+      {{template "status.go.html" .}}
+
+      <div class="row job">
+        <div class="col-xs-12 col-md-12">
+          <img
+             class="img-thumbnail action-button clean-button"
+             src="/public/fryer.jpg">
+        </div>
+      </div>
+      <div id="donut-log" class="lead">
+      </div>
+
+      <div class="row footer">
+        <div class="col-xs-12">
+          <a href="/">Order Donuts</a> | <a href="/restock">Restock Donuts</a> | Clean Fryer
+        </div>
+      </div>
+
+    </div>
+  </body>
+
+  <script>
+
+Tracer.initGlobalTracer(LightStep.tracer({
+  access_token         : '32f6abfbe2ec8ef46eb55eab21c785f4',
+  component_name       : 'donut-browser',
+  collector_host       : 'collector-loadtest.lightstep.com',
+  collector_port       : 443,
+  collector_encryption : 'tls',
+  xhr_instrumentation  : false,
+}));
+
+$(".clean-button").click(function(evt) {
+  var span = Tracer.startSpan('clean_fryer');
+  span.setBaggageItem('origin', ':: clean_fryer');
+  donutHeaders = {};
+  console.log(evt);
+  Tracer.inject(span, Tracer.FORMAT_TEXT_MAP, donutHeaders);
+  var cleanStatus = $($("#donut-log").prepend('<div class="fresh-donut"><em>Cleaning...</em></div>').children()[0]);
+  var before = Date.now();
+  $.ajax('/api/clean', {
+    data: JSON.stringify({}),
+    headers: donutHeaders,
+    method: 'POST',
+    success: function() {
+      var after = Date.now();
+      span.finish();
+      cleanStatus.html('Cleaned <b>fryer</b> (after ' + (after-before) + 'ms)');
+      fadeElement(cleanStatus);
+    },
+    error: function() {
+      var after = Date.now();
+      span.finish();
+      cleanStatus.html('<span style="color:#aa3333">Cleaning problem!</span>');
+      fadeElement(cleanStatus);
+    },
+  });
+});
+
+$("form").submit(function(event){
+  $(event.target).children(".spinner").removeClass("hidden")
+})
+
+function fadeElement(elem){
+  setTimeout(function(){
+    $(elem).fadeOut("slow", function(){
+      $(elem).remove();
+    });
+  },7000);
+}
+  </script>
+
+</html>
+

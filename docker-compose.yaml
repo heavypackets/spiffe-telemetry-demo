@@ -4,7 +4,7 @@ services:
   front-envoy:
     build:
       context: ./
-      dockerfile: Dockerfile-front
+      dockerfile: ./frontend/Dockerfile
     networks:
       envoymesh:
         aliases:
@@ -15,11 +15,12 @@ services:
     ports:
       - "8000:80"
       - "8001:8001"
+    tty: true
 
   donutsalon-1:
     build:
       context: ./
-      dockerfile: Dockerfile-back
+      dockerfile: ./backend/Dockerfile
     networks:
       envoymesh:
         aliases:
@@ -32,6 +33,22 @@ services:
     ports:
       - "9001:80"
       - "8081:8080"
+
+  spire-server:
+    build: 
+      context: ./spire
+      dockerfile: Dockerfile
+    networks:
+      envoymesh:
+        aliases:
+          - spire-server
+    expose:
+      - "8080"
+      - "8081"
+    ports:
+      - "8080:8080"
+      - "8082:8081"
+    tty: true
 
 networks:
   envoymesh: {}
