@@ -27,11 +27,7 @@
 [[constraint]] 
   name = "github.com/uber/jaeger-client-go" 
   version = "2.11.0" 
- 
-[[constraint]] 
-  name = "github.com/uber/jaeger-lib" 
-  version = "1.2.1" 
- 
+  
 [[constraint]] 
   branch = "master" 
   name = "golang.org/x/net" 
