@@ -10,6 +10,10 @@ COPY frontend/start_envoy.sh /usr/local/bin/start_envoy.sh
 COPY ls_access_token /etc/ls_access_token
 RUN chmod +x /usr/local/bin/start_envoy.sh
 
+# Install Jaeger config
+COPY jaeger.yaml /etc/jaeger.yaml
+RUN ln -s /usr/local/lib/libjaegertracingd.so /usr/local/lib/libjaegertracing.so 
+
 # Install SPIRE agent
 ARG SPIRE_VERSION=0.6.0
 ARG SPIRE_RELEASE=https://github.com/spiffe/spire/releases/download/${SPIRE_VERSION}/spire-${SPIRE_VERSION}-linux-x86_64-glibc.tar.gz

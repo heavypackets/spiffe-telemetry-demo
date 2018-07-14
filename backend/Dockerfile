@@ -27,6 +27,10 @@ COPY backend/envoy.json /etc/envoy.json
 COPY backend/start_envoy.sh /usr/local/bin/start_envoy.sh
 RUN chmod +x /usr/local/bin/start_envoy.sh
 
+# Install Jaeger config
+COPY jaeger.yaml /etc/jaeger.yaml
+RUN ln -s /usr/local/lib/libjaegertracingd.so /usr/local/lib/libjaegertracing.so
+
 # Install sidecar
 COPY spire/spiffe-helper /usr/local/bin/spiffe-helper
 COPY spire/helper.conf ${SPIRE_DIR}
