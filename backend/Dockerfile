@@ -2,7 +2,7 @@ FROM rnburn/envoy-jaeger:0.11
 
 RUN apt-get update && \
     apt-get install -qqy \
-    ca-certificates dnsutils python curl
+    ca-certificates gettext dnsutils python curl
 
 # Install app
 COPY backend/donutbin /usr/local/bin/donutbin

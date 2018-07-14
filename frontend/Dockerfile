@@ -2,7 +2,7 @@ FROM rnburn/envoy-jaeger:0.11
 
 RUN apt-get update && \
     apt-get install -qqy \
-    ca-certificates python
+    ca-certificates gettext python
 
 # Install Envoy config
 COPY frontend/envoy.json /etc/envoy.json

@@ -60,7 +60,7 @@
         "type": "dynamic",
         "config": {
           "library": "/usr/local/lib/libjaegertracing.so",
-          "config_file": "/etc/jaeger.yaml"
+          "config_file": "/etc/envoy-jaeger.yaml"
         }
       }
     }
@@ -99,17 +99,6 @@
         "hosts": [
           {
             "url": "tcp://donutsalon-2:80"
-          }
-        ]
-      },
-      {
-        "name": "jaeger",
-        "connect_timeout_ms": 1000,
-        "type": "strict_dns",
-        "lb_type": "round_robin",
-        "hosts": [
-          {
-            "url": "tcp://jaeger:9411"
           }
         ]
       }
