@@ -2,3 +2,5 @@ Replace example.org root cert with donutz.shop in config
 Hotrestart issues with envoy restart:
     unable to initialize hot restart: unable to bind domain socket with id=0
 x509 cert attestation for shop nodes
+Envoy/Jaeger with SPIFFE ids
+    maybe use simple awk with spiffe_id.sh upon new cert push
