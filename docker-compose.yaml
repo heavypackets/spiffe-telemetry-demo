@@ -110,5 +110,18 @@ services:
       - "5778:5778"
       - "14268:14268"
 
+  prometheus:
+    image: quay.io/prometheus/prometheus
+    networks:
+      envoymesh:
+        aliases:
+          - prometheus
+    expose:
+      - "9090"
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+    
 networks:
   envoymesh: {}
