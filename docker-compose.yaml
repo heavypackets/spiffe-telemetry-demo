@@ -31,8 +31,42 @@ services:
       - "80"
       - "8080"
     ports:
-      - "9001:80"
-      - "8081:8080"
+      - "80"
+      - "8080"
+
+  donutsalon-2:
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile
+    networks:
+      envoymesh:
+        aliases:
+          - donutsalon-2
+    environment:
+      - SERVICE_NAME=2
+    expose:
+      - "80"
+      - "8080"
+    ports:
+      - "80"
+      - "8080"
+  
+  donutsalon-3:
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile
+    networks:
+      envoymesh:
+        aliases:
+          - donutsalon-3
+    environment:
+      - SERVICE_NAME=3
+    expose:
+      - "80"
+      - "8080"
+    ports:
+      - "80"
+      - "8080"
 
   spire-server:
     build: 
