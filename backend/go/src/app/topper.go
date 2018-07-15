@@ -16,6 +16,7 @@ type Topper struct {
 	donutType string
 	duration  time.Duration
 	quantity  int
+	ds        *DonutService
 }
 
 func newTopper(tracerGen TracerGenerator, donutType string, duration time.Duration) *Topper {
@@ -57,11 +58,18 @@ func (t *Topper) Restock(ctx context.Context) {
 	SleepGaussian(t.duration*3, t.lock.QueueLength())
 	t.quantity += 10
 
+	if guage := t.ds.donutStock[t.donutType]; guage != nil {
+		guage.Set(float64(t.quantity))
+	}
 }
 
 func (t *Topper) Quantity(parentSpan opentracing.Span) int {
 	span := startSpan(fmt.Sprint("checking_quantity: ", t.donutType), t.tracer, opentracing.ChildOf(parentSpan.Context()))
 	defer span.Finish()
+
+	if guage := t.ds.donutStock[t.donutType]; guage != nil {
+		guage.Set(float64(t.quantity))
+	}
 
 	return t.quantity
 }

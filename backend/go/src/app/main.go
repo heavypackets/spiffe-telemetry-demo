@@ -17,6 +17,7 @@ import (
 
 	spiffe "github.com/spiffe/go-spiffe/uri"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -86,6 +87,7 @@ func main() {
 		panic(*tracerType)
 	}
 	ds := newDonutService(tracerGen)
+	setupTelemetry(ds)
 
 	// Make fake queries in the background.
 	//	backgroundProcess(*orderProcesses, ds, runFakeUser)
@@ -107,7 +109,7 @@ func main() {
 
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(*baseDir+"public/"))))
 
-	http.Handle("metrics", promhttp.Handler())
+	http.Handle("/metrics", promhttp.Handler())
 	fmt.Println("Starting on :", *port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
 	fmt.Println("Exiting", err)
@@ -195,6 +197,21 @@ func parseSVID(path string) error {
 	// Assume only one URI per SPIFFE spec
 	svid = uris[0]
 	fmt.Printf("SPIFFE ID [%s] verified\n", svid)
+
+	return nil
+}
+
+func setupTelemetry(ds *DonutService) error {
+	ds.totalOrderedDonuts = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "donutshop_total_ordered_donuts",
+		Help: "Number of donuts ordered.",
+	})
+	if err := prometheus.Register(ds.totalOrderedDonuts); err != nil {
+		return err
+	}
+
+	ds.orderedDonuts = make(map[string]prometheus.Counter)
+	ds.donutStock = make(map[string]prometheus.Gauge)
 
 	return nil
 }

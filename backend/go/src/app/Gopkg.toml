@@ -20,6 +20,7 @@
 #  version = "2.4.0" 
  
  required = ["github.com/spiffe/go-spiffe/spiffe",
+  "github.com/prometheus/client_golang/prometheus",
   "github.com/prometheus/client_golang/prometheus/promhttp"]
  
 [[constraint]] 
