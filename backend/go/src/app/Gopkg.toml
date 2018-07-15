@@ -19,7 +19,8 @@
 #  name = "github.com/x/y" 
 #  version = "2.4.0" 
  
- required = ["github.com/spiffe/go-spiffe/spiffe"]
+ required = ["github.com/spiffe/go-spiffe/spiffe",
+  "github.com/prometheus/client_golang/prometheus/promhttp"]
  
 [[constraint]] 
   name = "github.com/opentracing/opentracing-go" 

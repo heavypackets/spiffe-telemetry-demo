@@ -16,6 +16,8 @@ import (
 	"github.com/uber/jaeger-client-go/config"
 
 	spiffe "github.com/spiffe/go-spiffe/uri"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
@@ -104,6 +106,8 @@ func main() {
 	http.HandleFunc("/status", ds.handleState)
 
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(*baseDir+"public/"))))
+
+	http.Handle("metrics", promhttp.Handler())
 	fmt.Println("Starting on :", *port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
 	fmt.Println("Exiting", err)
