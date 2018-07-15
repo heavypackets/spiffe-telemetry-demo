@@ -18,9 +18,7 @@ services:
     tty: true
 
   donutsalon-1:
-    build:
-      context: ./
-      dockerfile: ./backend/Dockerfile
+    image: donutz/donutbin
     networks:
       envoymesh:
         aliases:
@@ -35,9 +33,7 @@ services:
       - "8080"
 
   donutsalon-2:
-    build:
-      context: ./
-      dockerfile: ./backend/Dockerfile
+    image: donutz/donutbin
     networks:
       envoymesh:
         aliases:
@@ -52,9 +48,7 @@ services:
       - "8080"
   
   donutsalon-3:
-    build:
-      context: ./
-      dockerfile: ./backend/Dockerfile
+    image: donutz/donutbin
     networks:
       envoymesh:
         aliases:
