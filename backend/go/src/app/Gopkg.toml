@@ -19,6 +19,7 @@
 #  name = "github.com/x/y" 
 #  version = "2.4.0" 
  
+ required = ["github.com/spiffe/go-spiffe/spiffe"]
  
 [[constraint]] 
   name = "github.com/opentracing/opentracing-go" 

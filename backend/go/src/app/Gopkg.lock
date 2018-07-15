@@ -24,6 +24,15 @@
   version = "v0.8.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/spiffe/go-spiffe"
+  packages = [
+    "spiffe",
+    "uri"
+  ]
+  revision = "2bb3101d62b4bea6371d792e818360e3f056867b"
+
+[[projects]]
   name = "github.com/uber/jaeger-client-go"
   packages = [
     ".",
@@ -61,6 +70,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d9836d7b42fbd16328a74a763a91d15063822c29050f3b1f9e43a41552201262"
+  inputs-digest = "9392b1ddcd02736f580a8e6e74b59e38fb5dfcf4bff75ebda91320c0d6071744"
   solver-name = "gps-cdcl"
   solver-version = 1

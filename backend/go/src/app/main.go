@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"math"
@@ -13,6 +14,8 @@ import (
 	opentracing "github.com/opentracing/opentracing-go"
 	jaeger "github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
+
+	spiffe "github.com/spiffe/go-spiffe/uri"
 )
 
 const (
@@ -31,6 +34,8 @@ var (
 	orderProcesses     = flag.Int("order", 1, "")
 	restockerProcesses = flag.Int("restock", 0, "")
 	cleanerProcesses   = flag.Int("clean", 0, "")
+	svidPem            = flag.String("svid", "/certs/svid.pem", "")
+	svid               = ""
 )
 
 func SleepGaussian(d time.Duration, queueLength float64) {
@@ -46,6 +51,16 @@ type TracerGenerator func(component string) opentracing.Tracer
 
 func main() {
 	flag.Parse()
+
+	for {
+		if err := parseSVID(*svidPem); err != nil {
+			time.Sleep(time.Duration(time.Second * 3))
+
+			continue
+		}
+
+		break
+	}
 
 	var tracerGen TracerGenerator
 	if *tracerType == "jaeger" {
@@ -137,7 +152,7 @@ func runFakeCleaner(flavor string, ds *DonutService) {
 }
 
 func setSpanSVID(span opentracing.Span) {
-	span.SetTag("spiffe_id", "spiffe://example.org/donutsalon-1")
+	span.SetTag("spiffe_id", svid)
 }
 
 func startSpan(name string, tracer opentracing.Tracer, opts ...opentracing.StartSpanOption) opentracing.Span {
@@ -154,4 +169,28 @@ func startSpanFronContext(name string, tracer opentracing.Tracer, ctx context.Co
 		setSpanSVID(parent)
 	}
 	return startSpan(name, tracer, opentracing.ChildOf(parentSpanContext))
+}
+
+func parseSVID(path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+
+	uris, err := spiffe.FGetURINamesFromPEM(f)
+	_ = f.Close()
+
+	if err != nil {
+		return err
+	}
+
+	if len(uris) == 0 {
+		return errors.New("No URIs found in specified SVID pem")
+	}
+
+	// Assume only one URI per SPIFFE spec
+	svid = uris[0]
+	fmt.Printf("SPIFFE ID [%s] verified\n", svid)
+
+	return nil
 }
