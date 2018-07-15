@@ -12,8 +12,11 @@ frontend:
 spire:
 	docker-compose build spire-server
 
+env:
+	./spire/register_nodes.sh
+
 clean:
 	rm -f backend/donutbin
 	docker-compose rm
 
-.PHONY: backend frontend spire
+.PHONY: backend frontend spire env
