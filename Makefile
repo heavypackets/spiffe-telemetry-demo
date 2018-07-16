@@ -12,7 +12,7 @@ frontend:
 spire:
 	docker-compose build spire-server
 
-env: backend frontend spire
+env: clean backend frontend spire
 	docker-compose down
 	./spire/register_nodes.sh
 
