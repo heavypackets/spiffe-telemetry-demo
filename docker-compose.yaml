@@ -117,6 +117,28 @@ services:
     volumes:
       - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
       - "./prometheus/donutsalon.rules:/etc/prometheus/donutsalon.rules"
+    entrypoint:
+    - 'prometheus'
+    - '--config.file=/etc/prometheus/prometheus.yml'
+    - '--web.external-url=http://localhost:9090'
+
+  alertmanager:
+    image: quay.io/prometheus/alertmanager
+    networks:
+      envoymesh:
+        aliases:
+        - alertmanager
+    expose:
+      - "9093"
+    ports:
+      - "9093:9093"
+    volumes:
+      - "./prometheus/alertmanager.yml:/etc/alertmanager.yml"
+    entrypoint:
+      - 'alertmanager'
+      - '--config.file'
+      - '/etc/alertmanager.yml'
+      - '--web.external-url=http://localhost:9093'
     
 networks:
   envoymesh: {}
