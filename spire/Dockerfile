@@ -13,7 +13,5 @@ RUN mv spire-${SPIRE_VERSION} ${SPIRE_DIR}
 WORKDIR ${SPIRE_DIR}
 COPY conf/agent.conf conf/agent/agent.conf
 COPY conf/server.conf conf/server/server.conf
-COPY create-entries.sh .
-RUN chmod +x create-entries.sh
 
 ENTRYPOINT /opt/spire/spire-server run

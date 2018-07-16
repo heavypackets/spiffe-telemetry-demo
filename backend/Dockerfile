@@ -9,7 +9,6 @@ COPY backend/donutbin /usr/local/bin/donutbin
 COPY backend/go/src/app /etc/app
 COPY backend/start_back.sh /usr/local/bin/start_back.sh
 RUN chmod +x /usr/local/bin/start_back.sh
-COPY ls_access_token /etc/ls_access_token
 
 # Install SPIRE agent
 ARG SPIRE_VERSION=0.6.0

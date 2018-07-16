@@ -7,7 +7,6 @@ RUN apt-get update && \
 # Install Envoy config
 COPY frontend/envoy.json /etc/envoy.json
 COPY frontend/start_envoy.sh /usr/local/bin/start_envoy.sh
-COPY ls_access_token /etc/ls_access_token
 RUN chmod +x /usr/local/bin/start_envoy.sh
 
 # Install Jaeger config
