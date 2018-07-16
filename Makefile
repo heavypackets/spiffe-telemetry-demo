@@ -1,7 +1,7 @@
 all: backend frontend spire
 
 backend: backend/donutbin
-	docker-compose build donutsalon-1
+	docker build -t donutz/donutbin --file backend/Dockerfile .
 
 backend/donutbin:
 	cd backend && ./build.sh
@@ -12,7 +12,8 @@ frontend:
 spire:
 	docker-compose build spire-server
 
-env:
+env: clean backend frontend spire
+	docker-compose down
 	./spire/register_nodes.sh
 
 clean:

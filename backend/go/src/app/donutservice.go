@@ -14,6 +14,7 @@ import (
 	"io"
 
 	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 const (
@@ -32,6 +33,10 @@ type DonutService struct {
 	payer     *Payer
 	fryer     *Fryer
 	tracerGen TracerGenerator
+
+	totalOrderedDonuts prometheus.Counter
+	orderedDonuts      map[string]prometheus.Counter
+	donutStock         map[string]prometheus.Gauge
 
 	toppersLock *SmartLock
 	toppers     map[string]*Topper
@@ -80,6 +85,11 @@ func (ds *DonutService) webOrder(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	ds.totalOrderedDonuts.Inc()
+	if c := ds.orderedDonuts[p.Flavor]; c != nil {
+		c.Inc()
 	}
 }
 
@@ -199,14 +209,45 @@ func (ds *DonutService) makeDonut(parentSpanContext opentracing.SpanContext, fla
 
 func (ds *DonutService) addTopping(span opentracing.Span, flavor string) error {
 	ds.toppersLock.Lock(span)
+	defer ds.toppersLock.Unlock()
+
 	topper := ds.toppers[flavor]
 	if topper == nil {
 		topper = newTopper(ds.tracerGen, flavor, topDuration)
+		topper.ds = ds
 		ds.toppers[flavor] = topper
+		setupToppingTelemetry(topper, ds)
 	}
-	ds.toppersLock.Unlock()
 
 	return topper.SprinkleTopping(opentracing.ContextWithSpan(context.Background(), span))
+}
+
+func setupToppingTelemetry(t *Topper, ds *DonutService) error {
+	flavor := t.donutType
+	name := fmt.Sprintf("donutshop_ordered_%s_donuts", flavor)
+	help := fmt.Sprintf("Number of %s donuts ordered.", flavor)
+
+	ds.orderedDonuts[flavor] = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: name,
+		Help: help,
+	})
+	if err := prometheus.Register(ds.orderedDonuts[flavor]); err != nil {
+		return err
+	}
+
+	name = fmt.Sprintf("donutshop_%s_donuts_stock", flavor)
+	help = fmt.Sprintf("Number of %s donuts in stock.", flavor)
+
+	ds.donutStock[flavor] = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: name,
+		Help: help,
+	})
+	if err := prometheus.Register(ds.donutStock[flavor]); err != nil {
+		return err
+	}
+	ds.donutStock[flavor].Set(float64(t.quantity))
+
+	return nil
 }
 
 func (ds *DonutService) cleanFryer(parentSpanContext opentracing.SpanContext) {

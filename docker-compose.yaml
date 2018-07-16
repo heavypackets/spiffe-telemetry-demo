@@ -18,9 +18,7 @@ services:
     tty: true
 
   donutsalon-1:
-    build:
-      context: ./
-      dockerfile: ./backend/Dockerfile
+    image: donutz/donutbin
     networks:
       envoymesh:
         aliases:
@@ -35,9 +33,7 @@ services:
       - "8080"
 
   donutsalon-2:
-    build:
-      context: ./
-      dockerfile: ./backend/Dockerfile
+    image: donutz/donutbin
     networks:
       envoymesh:
         aliases:
@@ -52,9 +48,7 @@ services:
       - "8080"
   
   donutsalon-3:
-    build:
-      context: ./
-      dockerfile: ./backend/Dockerfile
+    image: donutz/donutbin
     networks:
       envoymesh:
         aliases:
@@ -110,5 +104,41 @@ services:
       - "5778:5778"
       - "14268:14268"
 
+  prometheus:
+    image: quay.io/prometheus/prometheus
+    networks:
+      envoymesh:
+        aliases:
+          - prometheus
+    expose:
+      - "9090"
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "./prometheus/donutsalon.rules:/etc/prometheus/donutsalon.rules"
+    entrypoint:
+    - 'prometheus'
+    - '--config.file=/etc/prometheus/prometheus.yml'
+    - '--web.external-url=http://localhost:9090'
+
+  alertmanager:
+    image: quay.io/prometheus/alertmanager
+    networks:
+      envoymesh:
+        aliases:
+        - alertmanager
+    expose:
+      - "9093"
+    ports:
+      - "9093:9093"
+    volumes:
+      - "./prometheus/alertmanager.yml:/etc/alertmanager.yml"
+    entrypoint:
+      - 'alertmanager'
+      - '--config.file'
+      - '/etc/alertmanager.yml'
+      - '--web.external-url=http://localhost:9093'
+    
 networks:
   envoymesh: {}

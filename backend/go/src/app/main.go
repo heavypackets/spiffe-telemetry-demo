@@ -16,6 +16,9 @@ import (
 	"github.com/uber/jaeger-client-go/config"
 
 	spiffe "github.com/spiffe/go-spiffe/uri"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
@@ -36,6 +39,7 @@ var (
 	cleanerProcesses   = flag.Int("clean", 0, "")
 	svidPem            = flag.String("svid", "/certs/svid.pem", "")
 	svid               = ""
+	svidExposer        prometheus.Gauge
 )
 
 func SleepGaussian(d time.Duration, queueLength float64) {
@@ -84,6 +88,7 @@ func main() {
 		panic(*tracerType)
 	}
 	ds := newDonutService(tracerGen)
+	setupTelemetry(ds)
 
 	// Make fake queries in the background.
 	//	backgroundProcess(*orderProcesses, ds, runFakeUser)
@@ -104,6 +109,8 @@ func main() {
 	http.HandleFunc("/status", ds.handleState)
 
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(*baseDir+"public/"))))
+
+	http.Handle("/metrics", promhttp.Handler())
 	fmt.Println("Starting on :", *port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
 	fmt.Println("Exiting", err)
@@ -191,6 +198,32 @@ func parseSVID(path string) error {
 	// Assume only one URI per SPIFFE spec
 	svid = uris[0]
 	fmt.Printf("SPIFFE ID [%s] verified\n", svid)
+
+	return nil
+}
+
+func setupTelemetry(ds *DonutService) error {
+	ds.totalOrderedDonuts = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "donutshop_total_ordered_donuts",
+		Help: "Number of donuts ordered.",
+	})
+	if err := prometheus.Register(ds.totalOrderedDonuts); err != nil {
+		return err
+	}
+
+	ds.orderedDonuts = make(map[string]prometheus.Counter)
+	ds.donutStock = make(map[string]prometheus.Gauge)
+
+	// Expose spiffe_id through simple endpoint
+	svidExposer = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name:        "donutshop_app_identity",
+		Help:        "Application identity.",
+		ConstLabels: prometheus.Labels{"spiffe_id": svid},
+	})
+	if err := prometheus.Register(svidExposer); err != nil {
+		return err
+	}
+	svidExposer.Set(float64(1))
 
 	return nil
 }

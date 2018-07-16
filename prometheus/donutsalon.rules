@@ -1,0 +1,12 @@
+groups:
+- name: donutsalon
+  rules:
+  - alert: OutOfChocolateDonuts
+    expr: donutshop_chocolate_donuts_stock * on (instance, job) group_left(spiffe_id) donutshop_app_identity == 0
+    annotations:
+      summary: Out of ultra popular and awesome choco dones!
+  
+  - alert: Donut supplier 3 recieved 20 orders!
+    expr: donutshop_total_ordered_donuts * on (instance, job) group_left(spiffe_id) donutshop_app_identity{spiffe_id="spiffe://example.org/backend3"} >= 20
+    annotations:
+      summary: 20 dones ordered at donut supplier 3

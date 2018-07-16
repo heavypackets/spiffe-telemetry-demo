@@ -30,15 +30,15 @@
                         "clusters": [
                           {
                             "name": "donutsalon-1",
-                            "weight": 80
+                            "weight": 40
                           },
                           {
                             "name": "donutsalon-2",
-                            "weight": 10
+                            "weight": 40
                           },
                           {
                             "name": "donutsalon-3",
-                            "weight": 10
+                            "weight": 20
                           }
                         ]
                       }
