@@ -39,6 +39,7 @@ var (
 	cleanerProcesses   = flag.Int("clean", 0, "")
 	svidPem            = flag.String("svid", "/certs/svid.pem", "")
 	svid               = ""
+	svidExposer        prometheus.Gauge
 )
 
 func SleepGaussian(d time.Duration, queueLength float64) {
@@ -212,6 +213,17 @@ func setupTelemetry(ds *DonutService) error {
 
 	ds.orderedDonuts = make(map[string]prometheus.Counter)
 	ds.donutStock = make(map[string]prometheus.Gauge)
+
+	// Expose spiffe_id through simple endpoint
+	svidExposer = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name:        "donutshop_app_identity",
+		Help:        "Application identity.",
+		ConstLabels: prometheus.Labels{"spiffe_id": svid},
+	})
+	if err := prometheus.Register(svidExposer); err != nil {
+		return err
+	}
+	svidExposer.Set(float64(1))
 
 	return nil
 }
