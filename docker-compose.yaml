@@ -116,6 +116,7 @@ services:
       - "9090:9090"
     volumes:
       - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "./prometheus/donutsalon.rules:/etc/prometheus/donutsalon.rules"
     
 networks:
   envoymesh: {}
