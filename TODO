@@ -1,3 +1,1 @@
 Replace example.org root cert with donutz.shop in config
-Envoy/Jaeger with SPIFFE ids
-    maybe use simple awk with spiffe_id.sh upon new cert push
